@@ -7,7 +7,8 @@ namespace Acr.Dart.FederatedJob.Services
 {
     public interface IFederatedJobService
     {
-        void UpdateFederatedJobStatus(Guid transactionId, int status);
-        bool CheckIfTransactionExists(Guid transactionId);
+        bool UpdateFederatedJobStatus(Guid transactionId, int status);
+        bool CheckTransactionExists(Guid transactionId);
+        bool UpdateFederatedJobLogs(Guid transactionId, string logs);
     }
 }
