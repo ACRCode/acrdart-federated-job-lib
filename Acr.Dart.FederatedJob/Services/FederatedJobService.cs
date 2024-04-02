@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -63,8 +58,6 @@ namespace Acr.Dart.FederatedJob.Services
                 {
                     return false;
                 }
-                //var result = sqlCommand.ExecuteNonQuery();
-                //return result > 0 ? true : false;
             }
             catch (Exception ex)
             {
