@@ -1,72 +1,79 @@
-﻿using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace Acr.Dart.FederatedJob.Services
 {
     public class FederatedJobService : IFederatedJobService
     {
-        private readonly string _connectionString;
-        public FederatedJobService(string connectionString)
+        private readonly SqlConnection _connectionString;       
+        public FederatedJobService(SqlConnection connectionString)
         {
             _connectionString = connectionString;
         }
-        public void UpdateFederatedJobStatus(Guid transactionId, int status)
-        {
-            SqlConnection sqlConnection = null;
+        public bool UpdateFederatedJobStatus(Guid transactionId, int status)
+        {                        
             try
             {
-                sqlConnection = new SqlConnection(_connectionString);
-                sqlConnection.Open();
-                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSiteByTransactionId", sqlConnection)
+                _connectionString.Open();
+                SqlCommand sqlCommand = new SqlCommand("UpdateFedJobStatus", _connectionString)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                sqlCommand.Parameters.Add(new SqlParameter("@transactionId", transactionId));
-                sqlCommand.Parameters.Add(new SqlParameter("@status", status));
-                sqlCommand.ExecuteNonQuery();
-            }
-            catch(Exception ex) {
-                throw ex;
+                sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                sqlCommand.Parameters.Add(new SqlParameter("@Status", status));
+                var result = sqlCommand.ExecuteNonQuery();
+                return result > 0 ? true : false;
             }
             finally {
-                sqlConnection?.Close();
+                _connectionString?.Close();
             }         
         }
 
-        public bool CheckIfTransactionExists(Guid transactionId)
-        {
-
-            bool success = false;
-            SqlConnection sqlConnection = null;
+        public bool CheckTransactionExists(Guid transactionId)
+        {                      
             try
             {
-                sqlConnection = new SqlConnection(_connectionString);
-                sqlConnection.Open();
-                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSiteByTransactionId", sqlConnection)
+                _connectionString.Open();
+                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSite", _connectionString)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                sqlCommand.Parameters.Add(new SqlParameter("@transactionId", transactionId));
-                sqlCommand.ExecuteNonQuery(); 
-                success = true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;               
+                sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                if(sqlDataReader.HasRows)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             finally
             {
-                if (success && sqlConnection.State == ConnectionState.Open) {
-                    sqlConnection?.Close();
-                }                
+                _connectionString?.Close();
+            }          
+        }
+
+        public bool UpdateFederatedJobLogs(Guid transactionId, string logs)
+        {            
+            try
+            {
+                _connectionString.Open();
+                SqlCommand sqlCommand = new SqlCommand("UpdateFedJobLogs", _connectionString)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                sqlCommand.Parameters.Add(new SqlParameter("@Logs", logs));
+                var result = sqlCommand.ExecuteNonQuery();
+                return result > 0 ? true : false;
+            }            
+            finally
+            {
+                _connectionString?.Close();
             }
-            return success;
         }
     }
 }

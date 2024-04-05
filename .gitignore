@@ -1,0 +1,15 @@
+v15
+*.user
+.vs
+*.log
+*.orig
+*.dll
+/Acr.Dart.FederatedJob/bin
+/Acr.Dart.FederatedJob/obj
+*.bin
+*.v2
+.vs/Acr.Dart.FederatedJob/v17/.suo
+*.v2
+*.bin
+Directory.Build.props
+Nuget.Config
