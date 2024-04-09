@@ -122,14 +122,14 @@ extends:
     #Service connection which will be used to connect to Checkmarx server. By default, 'ACR Checkmarx' will be shared with each project and used by security scan.
     #Provide your own checkmarx service connection if you don't want to use default one.
     CheckmarxServiceConnection: 'ACR Checkmarx'
-    CheckmarxProject: 'acrdart-federatedjob'
+    CheckmarxProject: 'acrdart-federated-job-lib'
     CheckmarxCustomPreset: 'ACR Default'
     CheckmarxFullTeamName: 'CxServer\SOC\ACR\All\Informatics\DART'
     CheckmarxFolderExclusion: 'cvs, .svn, .hg , .git, .bzr, bin , obj,  backup, .idea, node_modules'
     #Service connection which will be used to connect to Nexus IQ server. By default, 'ACR Nexus IQ' will be shared with each project and used by security scan.
     #Provide your own Nexus IQ service connection if you don't want to use default one.
     NexusServiceConnection: 'ACR Nexus IQ'
-    NexusAppId: 'acrdart-federatedjob'
+    NexusAppId: 'acrdart-federated-job-lib'
     NexusScanStage: 'Build'
     # The name of the artifact to download to On-prem agent from pipeline for Nexus IQ Scan. If left empty, it will download all artifacts associated to the pipeline run.
     ArtifactsForNexusScan: ''  
