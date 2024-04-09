@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace Acr.Dart.FederatedJob.Services
 {
@@ -10,5 +8,6 @@ namespace Acr.Dart.FederatedJob.Services
         bool UpdateFederatedJobStatus(Guid transactionId, int status);
         bool CheckTransactionExists(Guid transactionId);
         bool UpdateFederatedJobLogs(Guid transactionId, string logs);
+        DataSet GetFederatedJobByTransactionId(Guid transactionId);
     }
 }
