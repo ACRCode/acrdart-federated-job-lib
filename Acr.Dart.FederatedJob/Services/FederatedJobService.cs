@@ -75,5 +75,28 @@ namespace Acr.Dart.FederatedJob.Services
                 _connectionString?.Close();
             }
         }
+
+        public DataSet GetFederatedJobByTransactionId(Guid transactionId)
+        {
+            try
+            {
+                _connectionString.Open();
+                DataSet dataSet = new DataSet();                
+                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSite", _connectionString)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
+                {
+                    adapter.Fill(dataSet);
+                    return dataSet;
+                }
+            }
+            finally
+            {
+                _connectionString?.Close();
+            }
+        }
     }
 }
