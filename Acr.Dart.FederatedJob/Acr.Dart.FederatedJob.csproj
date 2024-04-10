@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>American College of Radiology</Authors>
+    <Copyright>Copyright © American College of Radiology 2023-2024</Copyright>
+	  <AssemblyVersion>1.0.0.0</AssemblyVersion>
+	  <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
