@@ -1,5 +1,5 @@
 ﻿using Acr.Dart.FederatedJob.Services;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace Acr.Dart.FederatedJob.Factories
 {
