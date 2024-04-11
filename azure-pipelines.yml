@@ -14,7 +14,7 @@ resources :
 #ADOCS requires pipeline yaml file extending from shared template created by ADOCS team
 # You should provide parameters defined in shared template (shared-template.yml) as shown below
 extends :
-  template : project-examples/shared-template.yml@azureSharedTemplates
+  template : project-examples/connect-lib-template.yml@azureSharedTemplates
   # Below are parameters needed for shared template
   parameters :
     #Required
