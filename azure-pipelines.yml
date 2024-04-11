@@ -23,4 +23,4 @@ extends :
     CheckmarxProject: '$(Build.Repository.Name)'
     NexusAppId: '$(Build.Repository.Name)'
     NexusScanTarget: '$(Build.SourcesDirectory)/Nexus/**/*.zip'
-    CheckmarxFullTeamName: "CxServer\\SOC\\ACR\\All\\Dev\\AI LAB"
+    CheckmarxFullTeamName: "CxServer\SOC\ACR\All\Informatics\DART"
