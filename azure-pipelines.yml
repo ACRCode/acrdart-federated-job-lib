@@ -14,7 +14,7 @@ resources :
 #ADOCS requires pipeline yaml file extending from shared template created by ADOCS team
 # You should provide parameters defined in shared template (shared-template.yml) as shown below
 extends :
-  template : shared-template.yml@azureSharedTemplates
+  template : project-examples/connect-lib-template.yml@azureSharedTemplates
   # Below are parameters needed for shared template
   parameters :
     #Required
@@ -23,4 +23,4 @@ extends :
     CheckmarxProject: '$(Build.Repository.Name)'
     NexusAppId: '$(Build.Repository.Name)'
     NexusScanTarget: '$(Build.SourcesDirectory)/Nexus/**/*.zip'
-    CheckmarxFullTeamName: "CxServer\SOC\ACR\All\Informatics\DART"
+    CheckmarxFullTeamName: "CxServer\\SOC\\ACR\\All\\Informatics\\DART"
