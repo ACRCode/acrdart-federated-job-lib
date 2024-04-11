@@ -10,11 +10,6 @@ resources :
     endpoint : ACRCode
     name : ACRCode/ADOCS-templates
     branch : master
-    
-  variables:
-  solution: 'Acr.Dart.FederatedJob.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
 
 #ADOCS requires pipeline yaml file extending from shared template created by ADOCS team
 # You should provide parameters defined in shared template (shared-template.yml) as shown below
