@@ -1,26 +1,133 @@
-trigger :
-    - 'release/*'
+#add a pipeline trigger to run your pipeline
+#In this example, pipeline will be triggered when there is code changes commited to master branch of current repository
+#More complex trigger condition can be found at https://docs.microsoft.com/en-us/azure/devops/pipelines/process/pipeline-triggers?view=azure-devops&tabs=yaml
+trigger:
+    - master
+    - release/*
+
 #checkout multiple repositories in the pipeline
-resources :
-  repositories :
-  #1) this repository contains ADOCS share templates https://github.com/ACRCode/ADOCS-templates
+resources:
+  repositories:
+  #1) this repository contains ADOCS share templates
+  #https://github.com/ACRCode/ADOCS-templates
   #Required
-  - repository : azureSharedTemplates
-    type : github
-    endpoint : ACRCode
-    name : ACRCode/ADOCS-templates
-    branch : master
+  - repository: azureSharedTemplates
+    type: github
+    endpoint: ACRCode
+    name: ACRCode/ADOCS-templates
+    branch: master
+  #2) this repository is for AWS Cloudformation Template and Azure ARM
+  #https://github.com/ACRCode/InfrastructureAsCode
+  #Optional: only if current project need to use cloudformation templates from share repo
+  - repository: InfrastureAsCode
+    type: github
+    endpoint: ACRCode
+    name: ACRCode/InfrastructureAsCode
+    branch: main
+
+variables:
+  solution: 'Acr.Dart.FederatedJob.sln' # if targeting projects (*.csproj) instead of solutions (*.sln), build platform must be 'AnyCPU'
+  buildPlatform: 'Any CPU' # change to AnyCPU is targeting project instead of sln
+  buildConfiguration: 'Release'
 
 #ADOCS requires pipeline yaml file extending from shared template created by ADOCS team
-# You should provide parameters defined in shared template (shared-template.yml) as shown below
-extends :
-  template : project-examples/connect-lib-template.yml@azureSharedTemplates
+# You should provide parameters defined in shared template (shared-template.yml) as show below
+extends:
+  template: shared-template.yml@azureSharedTemplates #Refer to the resources section repo 1)
   # Below are parameters needed for shared template
-  parameters :
+  parameters:
+    #parameters to set build version
+    buildVersionMajor: 1
+    buildVersionMinor: 0
     #Required
-    pathToProject: 'Acr.Dart.FederatedJob/Acr.Dart.FederatedJob.csproj'
-    appName: '$(Build.Repository.Name)'
-    CheckmarxProject: '$(Build.Repository.Name)'
-    NexusAppId: '$(Build.Repository.Name)'
-    NexusScanTarget: '$(Build.SourcesDirectory)/Nexus/**/*.zip'
-    CheckmarxFullTeamName: "CxServer\\SOC\\ACR\\All\\Informatics\\DART"
+    #Provide tasks which will be executed for build process
+    #Below is an example of tasks for .net Core project
+    buildSteps:
+      - checkout: self
+      # - task : NuGetToolInstaller@1
+      #   inputs:
+      #       VersionSpec: '5.8.0'
+      - task: NuGetCommand@2
+        inputs:
+          command: 'restore'
+          restoreSolution: '$(solution)'
+          feedsToUse: 'config'
+          nugetConfigPath: 'Nuget.Config' # MUST BE CHANGED TO CORRECT NUGET PATH
+          externalFeedCredentials: 'ACR DART Nuget Feed-DART'
+      - task: MSBuild@1
+        inputs:
+          solution: '$(solution)'
+          msbuildVersion: '16.0'
+          msbuildArchitecture: 'x64'
+          platform: 'Any CPU'
+          configuration: 'Release'
+          msbuildArguments: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation=$(Build.ArtifactStagingDirectory)'
+        
+      - task: ArchiveFiles@2
+        inputs:
+          # platform: '$(buildPlatform)'
+          # configuration: '$(buildConfiguration)'
+          rootFolderOrFile: 'Acr.Dart.FederatedJob/bin/Release' 
+          #includeRootFolder: true 
+          archiveType: 'zip' # Options: zip, 7z, tar, wim
+          tarCompression: 'gz' # Optional. Options: gz, bz2, xz, none
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' 
+          replaceExistingArchive: true 
+          verbose: true# Optional
+          #quiet: # Optional
+      - task: NuGetCommand@2
+        inputs:
+          command: 'pack'
+          packagesToPack: 'Acr.Dart.FederatedJob/Acr.Dart.FederatedJob.csproj'
+          versioningScheme: 'off'
+      - task: NuGetCommand@2
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+          nuGetFeedType: 'external'
+          publishFeedCredentials: 'ACR DART Nuget Feed with API KEY-DART'
+          # packDestination: '$(Build.ArtifactStagingDirectory)/lib'
+          # versioningScheme: 'external'
+          # versionEnvVar: 'ACR DART Nuget Feed with API KEY-DART'
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)'
+          artifact: 'ProjectArtifacts' #Name can be customized 
+          publishLocation: 'pipeline'
+    
+    # ##Publish as library takes a nuget package artifact that was published in the pipeline and publishes it to Nexus
+    # PublishAsLibrary: true
+    #Provide your prefered Microsoft hosted agent pool image, with which you build tasks will be executed. Default is 'ubuntu-latest'
+    #For more image options, check https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#use-a-microsoft-hosted-agent
+    buildPoolImage: 'windows-latest'
+    ##############################################
+    #If choose to use the ACR hosted agent: set useSelfHostedAgents = true
+    useSelfHostedAgents: false
+    #This is default ACR self hosted agent pool name
+    selfHostedAgentPoolForBuild: 'Local Agents'
+    #For specifing the requirement of ACR hosted agent, for example, need to use windows agent, then use below parameter
+    selfHostedAgentPoolForBuildDemands: ['agent.os -equals Windows_NT']
+    #Below parameters related to ACR Security Scans
+    #Please Choose on-premise agent to run security scans, 
+    securityScanAgentPool: 'Local Agents'
+    #Option to turn on/off Checkmarx Security Scan: if false, Checkmarx scan will not be ran for current pipeline
+    runCheckMarxScan: true
+    #Option to turn on/off Nexus IQ Scan: if false, Nexus IQ scan will not be ran for current pipeline
+    runIQScan: true
+    #Service connection which will be used to connect to Checkmarx server. By default, 'ACR Checkmarx' will be shared with each project and used by security scan.
+    #Provide your own checkmarx service connection if you don't want to use default one.
+    CheckmarxServiceConnection: 'ACR Checkmarx'
+    CheckmarxProject: 'acrdart-federated-job-lib'
+    CheckmarxCustomPreset: 'ACR Default'
+    CheckmarxFullTeamName: 'CxServer\SOC\ACR\All\Informatics\DART'
+    CheckmarxFolderExclusion: 'cvs, .svn, .hg , .git, .bzr, bin , obj,  backup, .idea, node_modules'
+    #Service connection which will be used to connect to Nexus IQ server. By default, 'ACR Nexus IQ' will be shared with each project and used by security scan.
+    #Provide your own Nexus IQ service connection if you don't want to use default one.
+    NexusServiceConnection: 'ACR Nexus IQ'
+    NexusAppId: 'acrdart-federated-job-lib'
+    NexusScanStage: 'Build'
+    # The name of the artifact to download to On-prem agent from pipeline for Nexus IQ Scan. If left empty, it will download all artifacts associated to the pipeline run.
+    ArtifactsForNexusScan: ''  
+    #A list of Ant-style patterns relative to the workspace root that denote the files/archives to be scanned, e.g. **/target/*.war, **/target/*.ear. 
+    NexusScanTarget: '$(Build.SourcesDirectory)/Nexus/**/**.zip'
