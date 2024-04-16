@@ -85,7 +85,7 @@ extends:
           command: 'push'
           packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
           nuGetFeedType: 'external'
-          publishFeedCredentials: 'ACR DART Nuget Feed with API KEY-DART'
+          publishFeedCredentials: 'ACR DART Nuget Feed with API KEY-DART,Nuget Proxy-DART'
           # packDestination: '$(Build.ArtifactStagingDirectory)/lib'
           # versioningScheme: 'external'
           # versionEnvVar: 'ACR DART Nuget Feed with API KEY-DART'
