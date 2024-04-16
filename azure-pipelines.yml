@@ -52,8 +52,8 @@ extends:
           command: 'restore'
           restoreSolution: '$(solution)'
           feedsToUse: 'config'
-          nugetConfigPath: 'Nuget.Config' # MUST BE CHANGED TO CORRECT NUGET PATH
-          externalFeedCredentials: 'ACR DART Nuget Feed-DART'
+          nugetConfigPath: 'Nuget.Config'
+          externalFeedCredentials: 'ACR DART Nuget Feed-DART,Nuget Proxy-DART'
       - task: MSBuild@1
         inputs:
           solution: '$(solution)'
@@ -85,7 +85,7 @@ extends:
           command: 'push'
           packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
           nuGetFeedType: 'external'
-          publishFeedCredentials: 'ACR DART Nuget Feed with API KEY-DART,Nuget Proxy-DART'
+          publishFeedCredentials: 'ACR DART Nuget Feed with API KEY-DART'
           # packDestination: '$(Build.ArtifactStagingDirectory)/lib'
           # versioningScheme: 'external'
           # versionEnvVar: 'ACR DART Nuget Feed with API KEY-DART'
