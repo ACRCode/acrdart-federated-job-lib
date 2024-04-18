@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Transactions;
 using Microsoft.Data.SqlClient;
 
 namespace Acr.Dart.FederatedJob.Services
@@ -87,6 +89,105 @@ namespace Acr.Dart.FederatedJob.Services
                     CommandType = CommandType.StoredProcedure
                 };
                 sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
+                {
+                    adapter.Fill(dataSet);
+                    return dataSet;
+                }
+            }
+            finally
+            {
+                _connectionString?.Close();
+            }
+        }
+
+        public bool CheckSiteExistOrNotBySiteId(int siteId)
+        {
+
+            try
+            {
+                _connectionString.Open();
+                SqlCommand sqlCommand = new SqlCommand("GetSiteById", _connectionString)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                sqlCommand.Parameters.Add(new SqlParameter("@id", siteId));
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                if (sqlDataReader.HasRows)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            finally
+            {
+                _connectionString?.Close();
+            }
+        }
+
+        public DataSet FetchFedJobForSiteBySiteId(int siteId)
+        {
+            try
+            {
+                _connectionString.Open();
+                DataSet dataSet = new DataSet();
+                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSiteBySiteId", _connectionString)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                sqlCommand.Parameters.Add(new SqlParameter("@siteid", siteId));
+                using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
+                {
+                    adapter.Fill(dataSet);
+                    return dataSet;
+                }
+            }
+            finally
+            {
+                _connectionString?.Close();
+            }
+        }
+
+        public bool CheckSiteExistOrNotByTransactionId(string transactionId)
+        {
+            try
+            {
+                _connectionString.Open();
+                SqlCommand sqlCommand = new SqlCommand("GetSiteIdByTransactionId", _connectionString)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                sqlCommand.Parameters.Add(new SqlParameter("@transactionid", transactionId));
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                if (sqlDataReader.HasRows)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            finally
+            {
+                _connectionString?.Close();
+            }
+        }
+
+        public DataSet GetFedJobInputByTransactionId(string transactionId)
+        {
+            try
+            {
+                _connectionString.Open();
+                DataSet dataSet = new DataSet();
+                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSiteInput", _connectionString)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                sqlCommand.Parameters.Add(new SqlParameter("@transactionid", transactionId));
                 using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
                 {
                     adapter.Fill(dataSet);
