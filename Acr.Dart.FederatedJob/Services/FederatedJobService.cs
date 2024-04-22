@@ -16,14 +16,14 @@ namespace Acr.Dart.FederatedJob.Services
             try
             {
                 _connectionString.Open();
-                SqlCommand sqlCommand = new SqlCommand("UpdateFedJobStatus", _connectionString)
+                using (SqlCommand sqlCommand = new SqlCommand("UpdateFedJobStatus", _connectionString))
                 {
-                    CommandType = CommandType.StoredProcedure
-                };
-                sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
-                sqlCommand.Parameters.Add(new SqlParameter("@Status", status));
-                var result = sqlCommand.ExecuteNonQuery();
-                return result > 0 ? true : false;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;                   
+                    sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                    sqlCommand.Parameters.Add(new SqlParameter("@Status", status));
+                    var result = sqlCommand.ExecuteNonQuery();
+                    return result > 0 ? true : false;
+                }
             }
             finally {
                 _connectionString?.Close();
@@ -31,23 +31,23 @@ namespace Acr.Dart.FederatedJob.Services
         }
 
         public bool CheckTransactionExists(Guid transactionId)
-        {                      
+        {
             try
             {
                 _connectionString.Open();
-                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSite", _connectionString)
+                using (SqlCommand sqlCommand = new SqlCommand("GetFedJobForSite", _connectionString))
                 {
-                    CommandType = CommandType.StoredProcedure
-                };
-                sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                if(sqlDataReader.HasRows)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    if (sqlDataReader.HasRows)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             finally
@@ -57,19 +57,19 @@ namespace Acr.Dart.FederatedJob.Services
         }
 
         public bool UpdateFederatedJobLogs(Guid transactionId, string logs)
-        {            
+        {
             try
             {
                 _connectionString.Open();
-                SqlCommand sqlCommand = new SqlCommand("UpdateFedJobLogs", _connectionString)
+                using (SqlCommand sqlCommand = new SqlCommand("UpdateFedJobLogs", _connectionString))
                 {
-                    CommandType = CommandType.StoredProcedure
-                };
-                sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
-                sqlCommand.Parameters.Add(new SqlParameter("@Logs", logs));
-                var result = sqlCommand.ExecuteNonQuery();
-                return result > 0 ? true : false;
-            }            
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                    sqlCommand.Parameters.Add(new SqlParameter("@Logs", logs));
+                    var result = sqlCommand.ExecuteNonQuery();
+                    return result > 0 ? true : false;
+                }
+            }
             finally
             {
                 _connectionString?.Close();
@@ -81,16 +81,16 @@ namespace Acr.Dart.FederatedJob.Services
             try
             {
                 _connectionString.Open();
-                DataSet dataSet = new DataSet();                
-                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSite", _connectionString)
+                DataSet dataSet = new DataSet();
+                using (SqlCommand sqlCommand = new SqlCommand("GetFedJobForSite", _connectionString))
                 {
-                    CommandType = CommandType.StoredProcedure
-                };
-                sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
-                using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
-                {
-                    adapter.Fill(dataSet);
-                    return dataSet;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add(new SqlParameter("@TransactionId", transactionId));
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
+                    {
+                        adapter.Fill(dataSet);
+                        return dataSet;
+                    }
                 }
             }
             finally
