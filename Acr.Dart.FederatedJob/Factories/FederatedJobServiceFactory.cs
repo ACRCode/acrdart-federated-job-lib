@@ -12,8 +12,10 @@ namespace Acr.Dart.FederatedJob.Factories
         }
         public IFederatedJobService CreateFederatedJobService()
         {
-            SqlConnection sqlConnection = new SqlConnection(_connectionString);
-            return new FederatedJobService(sqlConnection);
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                return new FederatedJobService(sqlConnection);
+            }
         }
     }
 }
