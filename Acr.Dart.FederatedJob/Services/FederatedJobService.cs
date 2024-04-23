@@ -101,44 +101,17 @@ namespace Acr.Dart.FederatedJob.Services
             }
         }
 
-        public bool CheckSiteExistOrNotBySiteId(int siteId)
-        {
-
-            try
-            {
-                _connectionString.Open();
-                SqlCommand sqlCommand = new SqlCommand("GetSiteById", _connectionString)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-                sqlCommand.Parameters.Add(new SqlParameter("@id", siteId));
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                if (sqlDataReader.HasRows)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            finally
-            {
-                _connectionString?.Close();
-            }
-        }
-
-        public DataSet FetchFedJobForSiteBySiteId(int siteId)
+        public DataSet FetchFedJobForSiteByNodeId(string nodeId)
         {
             try
             {
                 _connectionString.Open();
                 DataSet dataSet = new DataSet();
-                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSiteBySiteId", _connectionString)
+                SqlCommand sqlCommand = new SqlCommand("GetFedJobForSiteByNodeId", _connectionString)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                sqlCommand.Parameters.Add(new SqlParameter("@siteid", siteId));
+                sqlCommand.Parameters.Add(new SqlParameter("@nodeid", nodeId));
                 using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
                 {
                     adapter.Fill(dataSet);

@@ -11,8 +11,7 @@ namespace Acr.Dart.FederatedJob.Services
         bool UpdateFederatedJobLogs(Guid transactionId, string logs);
         DataSet GetFederatedJobByTransactionId(Guid transactionId);
 
-        bool CheckSiteExistOrNotBySiteId(int siteId);
-        DataSet FetchFedJobForSiteBySiteId(int siteId);
+        DataSet FetchFedJobForSiteByNodeId(string nodeId);
         bool CheckSiteExistOrNotByTransactionId(string transactionId);
         DataSet GetFedJobInputByTransactionId(string transactionId);
     }
