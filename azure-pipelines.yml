@@ -38,7 +38,7 @@ extends:
   parameters:
     #parameters to set build version
     buildVersionMajor: 1
-    buildVersionMinor: 0
+    buildVersionMinor: 1
     #Required
     #Provide tasks which will be executed for build process
     #Below is an example of tasks for .net Core project
