@@ -44,9 +44,9 @@ extends:
     #Below is an example of tasks for .net Core project
     buildSteps:
       - checkout: self
-      # - task : NuGetToolInstaller@1
-      #   inputs:
-      #       VersionSpec: '5.8.0'
+      - task : NuGetToolInstaller@1
+        inputs:
+            VersionSpec: '5.8.0'
       - task: NuGetCommand@2
         inputs:
           command: 'restore'
