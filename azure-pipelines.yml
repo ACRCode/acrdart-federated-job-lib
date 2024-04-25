@@ -78,8 +78,8 @@ extends:
       - task: NuGetCommand@2
         inputs:
           command: 'pack'
-          packagesToPack: 'Acr.Dart.FederatedJob/Acr.Dart.FederatedJob.csproj'
-          versioningScheme: 'off'
+          packagesToPack: '**/*.csproj'
+          versioningScheme: 'byBuildNumber'
       - task: NuGetCommand@2
         inputs:
           command: 'push'
