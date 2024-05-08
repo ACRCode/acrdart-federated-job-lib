@@ -172,5 +172,25 @@ namespace Acr.Dart.FederatedJob.Services
                 _connectionString?.Close();
             }
         }
+
+        public bool UpdateRetrivedStudyCountByFedJobId(int fedJobId, int retrivedStudyCount)
+        {
+            try
+            {
+                _connectionString.Open();
+                SqlCommand sqlCommand = new SqlCommand("UpdateRetrivedStudyCountByFedjobId", _connectionString)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                sqlCommand.Parameters.Add(new SqlParameter("@fedjobid", fedJobId));
+                sqlCommand.Parameters.Add(new SqlParameter("@retrivedstudycount", retrivedStudyCount));
+                var result = sqlCommand.ExecuteNonQuery();
+                return result > 0 ? true : false;
+            }
+            finally
+            {
+                _connectionString?.Close();
+            }
+        }
     }
 }
