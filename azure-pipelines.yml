@@ -53,7 +53,7 @@ extends:
           restoreSolution: '$(solution)'
           feedsToUse: 'config'
           nugetConfigPath: 'Nuget.Config'
-          externalFeedCredentials: 'ACR DART Nuget Feed-DART,Nuget Proxy-DART'
+          externalFeedCredentials: 'ACR DART Nuget Feed-DART, ACR Nuget All Host with Credential-DART'
       - task: MSBuild@1
         inputs:
           solution: '$(solution)'
