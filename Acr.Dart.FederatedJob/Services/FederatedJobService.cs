@@ -173,16 +173,16 @@ namespace Acr.Dart.FederatedJob.Services
             }
         }
 
-        public bool UpdateRetrivedStudyCountByFedJobId(int fedJobId, int retrivedStudyCount)
+        public bool UpdateRetrivedStudyCountByTransactionId(Guid transactionId, int retrivedStudyCount)
         {
             try
             {
                 _connectionString.Open();
-                SqlCommand sqlCommand = new SqlCommand("UpdateRetrivedStudyCountByFedjobId", _connectionString)
+                SqlCommand sqlCommand = new SqlCommand("UpdateRetrivedStudyCountByTransactionId", _connectionString)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                sqlCommand.Parameters.Add(new SqlParameter("@fedjobid", fedJobId));
+                sqlCommand.Parameters.Add(new SqlParameter("@transactionid", transactionId));
                 sqlCommand.Parameters.Add(new SqlParameter("@retrivedstudycount", retrivedStudyCount));
                 var result = sqlCommand.ExecuteNonQuery();
                 return result > 0 ? true : false;
